@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>타조 경주 게임</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #222;
+      color: white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .banner {
+      background: linear-gradient(45deg, #ff0066, #ffcc00, #0099ff);
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      border-radius: 10px;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+      margin-bottom: 30px;
+      animation: bannerAnimation 3s ease-in-out infinite;
+    }
+
+    @keyframes bannerAnimation {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .game-container {
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 32px;
+      color: #ffcc00;
+    }
+
+    .input-container {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .input-container input {
+      padding: 10px;
+      font-size: 16px;
+      width: 120px;
+      border: 2px solid #ffcc00;
+      border-radius: 5px;
+      background-color: #222;
+      color: #ffcc00;
+    }
+
+    .input-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #ff0066;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .input-container button:hover {
+      background-color: #ff3385;
+    }
+
+    .race-track {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      margin-top: 30px;
+      position: relative;
+      height: 200px;
+      width: 100%;
+      background-image: url('https://via.placeholder.com/900x200?text=Racing+Track'); /* 경주 트랙 배경 */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .horse {
+      position: absolute;
+      width: 80px;  /* 타조 이미지 크기 조정 */
+      height: 80px;
+      background-size: cover;
+      background-position: center;
+      transition: transform 3s ease-in-out;
+    }
+
+    .left-horse {
+      background-image: url('https://via.placeholder.com/80x80.png?text=Left+Horse'); /* 왼쪽 깃말 */
+      left: 0;
+    }
+
+    .right-horse {
+      background-image: url('https://via.placeholder.com/80x80.png?text=Right+Horse'); /* 오른쪽 깃말 */
+      right: 0;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 24px;
+      color: #ffcc00;
+      font-weight: bold;
+      opacity: 0;
+      animation: resultAnimation 1s ease-out forwards;
+    }
+
+    @keyframes resultAnimation {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .result-win {
+      color: #00ff00;
+    }
+
+    .result-lose {
+      color: #ff0000;
+    }
+
+    .charge-container {
+      margin-top: 20px;
+    }
+
+    .charge-container input {
+      padding: 10px;
+      font-size: 16px;
+      width: 120px;
+      border: 2px solid #ffcc00;
+      border-radius: 5px;
+      background-color: #222;
+      color: #ffcc00;
+    }
+
+    .charge-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #00ff00;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .charge-container button:hover {
+      background-color: #66ff66;
+    }
+
+    .description {
+      background-color: #444;
+      color: #ffcc00;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    /* 통장 영역 */
+    .bank-container {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #ffcc00;
+    }
+
+    .bank-container p {
+      margin-bottom: 5px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="banner">
+    🎰 **타조 경주 게임** 🎰<br>
+    승리의 순간을 향해 도전하세요! 💥
+  </div>
+
+  <div class="game-container">
+    <h1>타조 경주 도박 프로그램</h1>
+
+    <!-- 잔액 표시 -->
+    <p id="balance-display">배팅 금액: 0원</p>
+
+    <!-- 통장 표시 -->
+    <div class="bank-container">
+      <p>통장 잔액: <span id="bank-balance">500000원</span></p>
+    </div>
+
+    <div class="input-container">
+      <input type="number" id="bet-amount" placeholder="배팅 금액" min="10">
+      <button id="bet-left">왼쪽 깃말 배팅</button>
+      <button id="bet-right">오른쪽 깃말 배팅</button>
+    </div>
+
+    <div class="race-track">
+      <div class="horse left-horse" id="left-horse"></div>
+      <div class="horse right-horse" id="right-horse"></div>
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <div id="loading" class="loading" style="display: none;">🎰 경주 중... 🎰</div>
+
+    <div class="charge-container">
+      <input type="number" id="charge-amount" placeholder="충전 금액" min="5000">
+      <button id="charge-button">충전</button>
+    </div>
+  </div>
+
+  <div class="description">
+    <strong>게임 설명:</strong><br>
+    1. **충전**은 5,000원 이상부터 가능합니다.<br>
+    2. **배팅**은 최소 10원부터 가능합니다.<br>
+    3. **왼쪽 깃말(파랑색)**과 **오른쪽 깃말(빨강색)**에 배팅하세요.<br>
+    4. **배팅 시 승리**하면 배팅 금액의 **2배**를 받습니다.<br>
+    5. **배팅 시 패배**하면 배팅 금액의 **1.5배**를 잃습니다.<br>
+    6. 경주 후 결과를 확인하고 승패를 결정합니다.<br>
+  </div>
+
+  <script>
+    const betLeftButton = document.getElementById('bet-left');
+    const betRightButton = document.getElementById('bet-right');
+    const betAmountInput = document.getElementById('bet-amount');
+    const resultDiv = document.getElementById('result');
+    const leftHorse = document.getElementById('left-horse');
+    const rightHorse = document.getElementById('right-horse');
+    const balanceDisplay = document.getElementById('balance-display');
+    const chargeAmountInput = document.getElementById('charge-amount');
+    const chargeButton = document.getElementById('charge-button');
+    const bankBalanceDisplay = document.getElementById('bank-balance');
+    
+    let balance = 0; // 배팅 금액
+    let bankBalance = 500000; // 통장 잔액
+
+    // 잔액 업데이트 함수
+    function updateBalance() {
+      balanceDisplay.textContent = `배팅 금액: ${balance}원`;
+    }
+
+    // 통장 업데이트 함수
+    function updateBankBalance() {
+      bankBalanceDisplay.textContent = `${bankBalance}원`;
+    }
+
+    // 충전 기능
+    chargeButton.addEventListener('click', () => {
+      const chargeAmount = parseInt(chargeAmountInput.value);
+      if (chargeAmount >= 5000) {
+        bankBalance += chargeAmount;
+        updateBankBalance();
+        alert(`${chargeAmount}원이 충전되었습니다.`);
+      } else {
+        alert('최소 충전 금액은 5,000원입니다.');
+      }
+    });
+
+    // 배팅 기능
+    function startRace(winner) {
+      resultDiv.textContent = '';
+      leftHorse.style.transform = 'translateX(0)';
+      rightHorse.style.transform = 'translateX(0)';
+      document.getElementById('loading').style.display = 'block';
+
+      setTimeout(() => {
+        const leftMove = Math.random() * 600 + 300;
+        const rightMove = Math.random() * 600 + 300;
+        
+        leftHorse.style.transform = `translateX(${leftMove}px)`;
+        rightHorse.style.transform = `translateX(${rightMove}px)`;
+
+        setTimeout(() => {
+          document.getElementById('loading').style.display = 'none';
+          
+          let resultText = '';
+          let resultClass = '';
+
+          if ((winner === 'left' && leftMove > rightMove) || (winner === 'right' && rightMove > leftMove)) {
+            resultText = winner === 'left' ? '왼쪽 깃말이 승리!' : '오른쪽 깃말이 승리!';
+            resultClass = 'result-win';
+            if (winner === 'left') {
+              bankBalance += parseInt(betAmountInput.value) * 2;  // 승리한 경우 배팅 금액 2배
+            } else {
+              bankBalance += parseInt(betAmountInput.value) * 2;
+            }
+          } else {
+            resultText = winner === 'left' ? '왼쪽 깃말이 패배!' : '오른쪽 깃말이 패배!';
+            resultClass = 'result-lose';
+            bankBalance -= parseInt(betAmountInput.value) * 1.5;  // 패배한 경우 1.5배 차감
+          }
+          
+          resultDiv.textContent = resultText;
+          resultDiv.className = `result ${resultClass}`;
+          updateBankBalance();
+        }, 2000);
+      }, 500);
+    }
+
+    // 왼쪽 깃말 배팅
+    betLeftButton.addEventListener('click', () => {
+      const betAmount = parseInt(betAmountInput.value);
+      if (betAmount && betAmount <= bankBalance) {
+        balance = betAmount;
+        bankBalance -= betAmount;
+        updateBalance();
+        startRace('left');
+      } else {
+        alert('배팅 금액이 부족하거나 잘못되었습니다.');
+      }
+    });
+
+    // 오른쪽 깃말 배팅
+    betRightButton.addEventListener('click', () => {
+      const betAmount = parseInt(betAmountInput.value);
+      if (betAmount && betAmount <= bankBalance) {
+        balance = betAmount;
+        bankBalance -= betAmount;
+        updateBalance();
+        startRace('right');
+      } else {
+        alert('배팅 금액이 부족하거나 잘못되었습니다.');
+      }
+    });
+  </script>
+
+</body>
+</html>
